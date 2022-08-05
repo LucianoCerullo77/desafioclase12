@@ -25,16 +25,17 @@ let productos = [{
     id: 3                                                                                                                                              
   }];
 
+  // Items de ejemplo usados previamente para el desafío
+
 let mensajes = JSON.parse(fs.readFileSync('mensajes.txt','utf-8'))
 
 io.on('connection', function(socket){
-    //parte de productos
+    console.log('User connected')
     socket.emit('productos', productos)
     socket.on('newProduct', function(data){
         productos.push(data)
         io.sockets.emit('productos', productos)
     })
-    //parte de mensajes
     socket.emit('mensajes', mensajes)
     socket.on('newMensaje', function(data){
         mensajes.push(data)
@@ -45,7 +46,8 @@ io.on('connection', function(socket){
 })
 
 const PORT = 8080
-const srv = server.listen(PORT, () => {
+
+server.listen(PORT, () => {
     console.log(`Server running on Port ${srv.address().port}`)
 })
-server.on('error', error => console.log(`Error en servidor ${error}`))
+server.on('error', error => console.log(`Error found in Server : ${error}`))
