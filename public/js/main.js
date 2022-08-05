@@ -1,21 +1,8 @@
 let socket = io.connect()
 
 socket.on('productos', function(data){
-    console.log("here")
     renderProductos(data)
 })
-
-function renderProductos(data){
-    let html = data.map(function(product){
-        return(`<tr>
-                    <td class="fw-normal mb-1">${product.title}</td>
-                    <td class="fw-normal mb-1">${product.price}</td>
-                    <td><img src=${product.foto_url} style="width: 50px; height: 50px"></td>
-                </tr>`)
-    }).join('')
-    document.getElementById('table_products').innerHTML=html
-
-}
 
 function addProduct(){
     let product = {
@@ -31,21 +18,22 @@ function addProduct(){
     return false;
 }
 
-socket.on('mensajes', function(data){
-    renderMensajes(data)
-})
-
-function renderMensajes(data){
-    let html = data.map(function(mensaje, index){
-        return(`<span style="color: blue; font-weight: bold;">${mensaje.autor}</span>
-         <span style="color: brown;">${mensaje.fecha}</span>
-         :<span style="color: green; font-style: italic;">${mensaje.mensaje}</span> 
-         <br>`)
+function renderProductos(data){
+    let html = data.map(function(product){
+        return(`<tr>
+                    <td class="fw-normal m-3">${product.title}</td>
+                    <td class="fw-normal m-3">${product.price}</td>
+                    <td><img src=${product.foto_url} style="width: 50px; height: 50px "></td>
+                </tr>`)
     }).join('')
-    document.getElementById('mensajes').innerHTML=html
+    document.getElementById('table_products').innerHTML=html
 
 }
 
+
+socket.on('mensajes', function(data){
+    renderMensajes(data)
+})
 
 function addMensaje(){
     let currentdate = new Date(); 
@@ -59,3 +47,16 @@ function addMensaje(){
     document.getElementById('mensaje').focus()
     return false;
 }
+
+function renderMensajes(data){
+    let html = data.map(function(mensaje, index){
+        return(`<span style="color: #346beb; font-weight: bold;">${mensaje.autor}</span>
+         <span style="color: #a36f0f;">${mensaje.fecha}</span>
+         :<span style="color: #0d912c; font-style: italic;">${mensaje.mensaje}</span> 
+         <br>`)
+    }).join('')
+    document.getElementById('mensajes').innerHTML=html
+
+}
+
+

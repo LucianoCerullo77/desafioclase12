@@ -48,6 +48,6 @@ io.on('connection', function(socket){
 const PORT = 8080
 
 server.listen(PORT, () => {
-    console.log(`Server running on Port ${srv.address().port}`)
+    console.log(`Server running on Port ${PORT}`)
 })
 server.on('error', error => console.log(`Error found in Server : ${error}`))
