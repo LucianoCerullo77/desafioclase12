@@ -1,29 +1,51 @@
-const express = require('express');
-
+const express = require('express')
 const app = express()
+const server = require('http').Server(app)
+const io = require('socket.io')(server)
+const fs = require('fs')
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public'));
 
-app.set('views', './views');
-app.set('view engine', 'ejs');
+let productos = [{                                                                                                                                                    
+    title: "Escuadra",                                                                                                                                 
+    price: 10,                                                                                                                                     
+    foto_url: "https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png",                                     
+    id: 1                                                                                                                                              
+  },                                                                                                                                                   
+  {                                                                                                                                                    
+    title: "Calculadora",                                                                                                                              
+    price: 25,                                                                                                                                     
+    foto_url: "https://cdn3.iconfinder.com/data/icons/education-209/64/calculator-math-tool-school-256.png",                                          
+    id: 2                                                                                                                                              
+  },                                                                                                                                                   
+  {                                                                                                                                                    
+    title: "Globo Terráqueo",                                                                                                                          
+    price: 40,                                                                                                                                     
+    foto_url: "https://cdn3.iconfinder.com/data/icons/education-209/64/globe-earth-geograhy-planet-school-256.png",                                   
+    id: 3                                                                                                                                              
+  }];
 
-const datos = []
+let mensajes = JSON.parse(fs.readFileSync('mensajes.txt','utf-8'))
 
-app.get('/', (req, res) => {
-    res.render('form', {datos});
+io.on('connection', function(socket){
+    //parte de productos
+    socket.emit('productos', productos)
+    socket.on('newProduct', function(data){
+        productos.push(data)
+        io.sockets.emit('productos', productos)
+    })
+    //parte de mensajes
+    socket.emit('mensajes', mensajes)
+    socket.on('newMensaje', function(data){
+        mensajes.push(data)
+        fs.writeFileSync('mensajes.txt', JSON.stringify(mensajes))
+        io.sockets.emit('mensajes', mensajes)
+    })
+
 })
 
-app.post('/personas', (req, res) => {
-    datos.push(req.body)
-    res.render('form', {datos});
+const PORT = 8080
+const srv = server.listen(PORT, () => {
+    console.log(`Server running on Port ${srv.address().port}`)
 })
-
-app.listen(8080, () => console.log('Servidor corriendo en el puerto 8080'))
-
-// Por simpleza de código es mucho más eficiente hacerlo con EJS que con PUG o HandleBars.
-// Porque EJS es una plantilla de HTML, y PUG es una plantilla de JavaScript.
-// Por lo tanto, si queremos usar una plantilla de HTML, usamos EJS.
-// Si queremos usar una plantilla de JavaScript, usamos PUG.
-// Y con Handlebars, no es necesario usar ninguna plantilla.
-// (O así fue como lo entendí en el curso).
+server.on('error', error => console.log(`Error en servidor ${error}`))
